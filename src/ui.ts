@@ -69,12 +69,19 @@ function renderZoneCard(s: State) {
     <p class="small muted">${esc(describeZone(m))} Frost windows are estimates.</p>`;
 }
 
+function textOn(hex: string): string {
+  const n = parseInt(hex.slice(1), 16);
+  const [r, g, b] = [n >> 16, (n >> 8) & 255, n & 255].map((c) => c / 255);
+  const lum = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  return lum > 0.5 ? "#1a1a1a" : "#ffffff";
+}
+
 function renderZoneStrip(s: State) {
   const el = $("#zone-strip");
   el.innerHTML = ZONE_CODES.map((z) => {
     const m = ZONE_META[z];
     const active = s.zone === z;
-    return `<button type="button" class="zone-cell${active ? " active" : ""}" style="--c:${m.color}" data-zone="${z}" title="Zone ${z}: ${m.minF} to ${m.maxF} °F" aria-pressed="${active}"><span>${z}</span></button>`;
+    return `<button type="button" class="zone-cell${active ? " active" : ""}" style="--c:${m.color};color:${textOn(m.color)}" data-zone="${z}" title="Zone ${z}: ${m.minF} to ${m.maxF} °F" aria-pressed="${active}"><span>${z}</span></button>`;
   }).join("");
 }
 

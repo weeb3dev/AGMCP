@@ -329,7 +329,6 @@ p {
   padding: 0;
   height: 34px;
   background: var(--c);
-  color: oklch(from var(--c) calc(l > 0.62 ? 0.2 : 0.98) 0 0);
   font: inherit;
   font-size: 0.7rem;
   font-weight: 700;
