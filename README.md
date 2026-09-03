@@ -1,5 +1,7 @@
 # AGMCP — USDA Hardiness Zones for people and agents
 
+**Live:** [https://agmcp.shogun-0a9.workers.dev](https://agmcp.shogun-0a9.workers.dev) · try `/?zip=80301`, [`/api/v1/zone/97330`](https://agmcp.shogun-0a9.workers.dev/api/v1/zone/97330), [`/llms.txt`](https://agmcp.shogun-0a9.workers.dev/llms.txt)
+
 The 2023 USDA Plant Hardiness Zone Map for every US ZIP code (50 states, DC, Puerto Rico), turned into a primitive that agents can use directly:
 
 - **A website for humans**: look up a ZIP, see the zone, browse 50+ vegetables/herbs/peppers/fruit rated for that zone, and build a garden plan.
@@ -81,6 +83,8 @@ npm run preview   # wrangler dev: site + API at http://localhost:8787
 
 ### Deploy to Cloudflare
 
+The live site is deployed with [Workers Builds](https://developers.cloudflare.com/workers/ci-cd/builds/): every push to `main` runs `npm run build` then `npx wrangler deploy`. To deploy your own copy manually:
+
 ```bash
 npx wrangler login
 npm run deploy    # build + wrangler deploy
@@ -90,7 +94,7 @@ No secrets are needed. `wrangler.jsonc` serves `dist/` as static assets with the
 
 ### Test the WebMCP tools
 
-- **ChatGPT desktop app**: open the deployed URL in the built-in browser and ask ChatGPT Work or Codex, e.g. *"What zone is 80301? Plan a salsa garden for it."* Click **Site tools** in the address bar to inspect the tools.
+- **ChatGPT desktop app**: open [https://agmcp.shogun-0a9.workers.dev](https://agmcp.shogun-0a9.workers.dev) in the built-in browser and ask ChatGPT Work or Codex, e.g. *"What zone is 80301? Plan a salsa garden for it."* Click **Site tools** in the address bar to inspect the tools.
 - **Chrome**: enable `chrome://flags/#enable-webmcp-testing`, reload, then in DevTools:
 
 ```js
