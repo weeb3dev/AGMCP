@@ -238,8 +238,11 @@ export function mountUi() {
     renderActivity(s);
   };
   subscribe((s) => {
-    if (document.startViewTransition) document.startViewTransition(() => rerender(s));
-    else rerender(s);
+    if (document.startViewTransition) {
+      const t = document.startViewTransition(() => rerender(s));
+      t.ready.catch(() => {});
+      t.finished.catch(() => {});
+    } else rerender(s);
   });
   rerender(state);
 

@@ -387,8 +387,14 @@ export interface WebMcpStatus {
   error: string | null;
 }
 
+/** Spec location is document.modelContext; Chrome < 150 shipped it on navigator. */
+export function getModelContext(): WebMCP.ModelContext | undefined {
+  const nav = navigator as Navigator & { modelContext?: WebMCP.ModelContext };
+  return document.modelContext ?? nav.modelContext;
+}
+
 export async function registerWebMcpTools(): Promise<WebMcpStatus> {
-  const mc = document.modelContext;
+  const mc = getModelContext();
   if (!mc || typeof mc.registerTool !== "function") return { supported: false, registered: 0, error: null };
   let registered = 0;
   let error: string | null = null;

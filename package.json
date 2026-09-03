@@ -8,7 +8,7 @@
   "scripts": {
     "data": "node scripts/build-data.mjs",
     "dev": "vite",
-    "build": "npm run data && tsc --noEmit && vite build",
+    "build": "npm run data && tsc --noEmit && tsc -p worker --noEmit && vite build && cp public/_headers dist/_headers",
     "preview": "wrangler dev",
     "deploy": "npm run build && wrangler deploy",
     "typecheck": "tsc --noEmit"
