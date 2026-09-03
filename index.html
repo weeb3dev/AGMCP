@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <title>AGMCP — USDA Hardiness Zones for people and agents</title>
+    <meta
+      name="description"
+      content="Look up any US ZIP code's 2023 USDA Plant Hardiness Zone, see what grows there, and build a garden plan together with your AI agent via WebMCP tools."
+    />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌱</text></svg>" />
+    <link rel="preload" href="/data/zip-geo.json" as="fetch" crossorigin fetchpriority="low" />
+  </head>
+  <body>
+    <div id="app">
+      <header class="topbar">
+        <a class="brand" href="/">
+          <span class="brand-mark" aria-hidden="true">🌱</span>
+          <span><strong>AGMCP</strong> <span class="muted">USDA Hardiness Zones, tool-ready</span></span>
+        </a>
+        <nav class="topnav" aria-label="Sections">
+          <a href="#plants">Plants</a>
+          <a href="#plan">Garden plan</a>
+          <a href="#tools">Agent tools</a>
+          <a href="#api">API</a>
+        </nav>
+      </header>
+
+      <div id="webmcp-banner" class="banner" hidden></div>
+
+      <main>
+        <section class="hero" aria-labelledby="hero-title">
+          <div class="hero-copy">
+            <h1 id="hero-title">What can you grow where you live?</h1>
+            <p class="lede">
+              The 2023 USDA Plant Hardiness Zone Map for every US ZIP code, exposed as structured
+              <a href="https://github.com/webmachinelearning/webmcp" rel="noopener">WebMCP</a> tools. Search it yourself, or let your
+              agent look up zones, compare locations, and build a garden plan with you on this page.
+            </p>
+            <form
+              id="zip-form"
+              class="zip-form"
+              toolname="search_zip_form"
+              tooldescription="Look up the USDA plant hardiness zone for a 5-digit US ZIP code and show it on the page."
+              toolautosubmit
+            >
+              <label class="sr-only" for="zip-input">ZIP code</label>
+              <input
+                id="zip-input"
+                name="zip"
+                inputmode="numeric"
+                pattern="\d{5}"
+                maxlength="5"
+                autocomplete="postal-code"
+                placeholder="Enter a 5-digit ZIP, e.g. 97330"
+                required
+                toolparamdescription="5-digit US ZIP code"
+              />
+              <button type="submit" class="btn btn-primary">Look up zone</button>
+              <button type="button" id="geo-btn" class="btn">Use my location</button>
+            </form>
+            <p id="zip-error" class="error" role="alert" hidden></p>
+          </div>
+          <div id="zone-card" class="zone-card" aria-live="polite"></div>
+        </section>
+
+        <section class="zone-strip-wrap" aria-label="Zone scale">
+          <div id="zone-strip" class="zone-strip"></div>
+        </section>
+
+        <div class="grid">
+          <section id="plants" class="panel" aria-labelledby="plants-title">
+            <div class="panel-head">
+              <h2 id="plants-title">Plants for your zone</h2>
+              <p class="muted" id="plants-sub">Pick a ZIP to filter 50+ common vegetables, herbs, peppers and fruit.</p>
+            </div>
+            <div class="chips" id="category-chips" role="group" aria-label="Filter by category"></div>
+            <input id="plant-search" class="search" type="search" placeholder="Search plants…" aria-label="Search plants" />
+            <div id="plant-grid" class="plant-grid"></div>
+          </section>
+
+          <aside class="side">
+            <section id="plan" class="panel" aria-labelledby="plan-title">
+              <div class="panel-head">
+                <h2 id="plan-title">Garden plan</h2>
+                <div class="row">
+                  <button id="calendar-btn" class="btn btn-sm" type="button">Planting calendar</button>
+                  <button id="export-btn" class="btn btn-sm" type="button">Copy as Markdown</button>
+                  <button id="clear-btn" class="btn btn-sm btn-danger" type="button">Clear</button>
+                </div>
+              </div>
+              <ul id="plan-list" class="plan-list"></ul>
+            </section>
+
+            <section class="panel" aria-labelledby="activity-title">
+              <div class="panel-head">
+                <h2 id="activity-title">Agent activity</h2>
+                <p class="muted">Every WebMCP tool call made on this page shows up here.</p>
+              </div>
+              <ol id="activity-log" class="activity"></ol>
+            </section>
+          </aside>
+        </div>
+
+        <section id="tools" class="panel" aria-labelledby="tools-title">
+          <div class="panel-head">
+            <h2 id="tools-title">Agent tools on this page</h2>
+            <p class="muted">
+              Registered with <code>document.modelContext.registerTool()</code>. Open this page in the ChatGPT desktop browser or Chrome with
+              <code>chrome://flags/#enable-webmcp-testing</code> and ask your agent things like
+              <em>"What zone is 80301 and what peppers can I grow?"</em>
+            </p>
+          </div>
+          <div id="tool-list" class="tool-list"></div>
+        </section>
+
+        <section id="api" class="panel" aria-labelledby="api-title">
+          <div class="panel-head">
+            <h2 id="api-title">JSON API for backend agents</h2>
+            <p class="muted">The same data as a plain HTTP API, so server-side agents and other apps can use hardiness zones as a primitive.</p>
+          </div>
+          <pre class="code" id="api-docs"></pre>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <p>
+          Zone data: <a href="https://planthardiness.ars.usda.gov/" rel="noopener">USDA ARS Plant Hardiness Zone Map (2023)</a>, prepared by the
+          <a href="https://prism.oregonstate.edu/phzm/" rel="noopener">PRISM Group, Oregon State University</a>. ZIP centroids: US Census Bureau ZCTA
+          gazetteer (2024). Plant ranges and frost dates are horticultural estimates, not USDA data.
+        </p>
+        <p><a href="https://github.com/weeb3dev/AGMCP" rel="noopener">Source on GitHub</a> · MIT License</p>
+      </footer>
+    </div>
+
+    <dialog id="confirm-dialog" class="dialog">
+      <form method="dialog">
+        <h3 id="confirm-title">Confirm</h3>
+        <p id="confirm-body"></p>
+        <div class="row end">
+          <button class="btn" value="cancel">Cancel</button>
+          <button class="btn btn-danger" value="confirm">Confirm</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="calendar-dialog" class="dialog wide">
+      <div class="panel-head">
+        <h3>Planting calendar</h3>
+        <p class="muted" id="calendar-sub"></p>
+      </div>
+      <div id="calendar-body"></div>
+      <form method="dialog" class="row end"><button class="btn">Close</button></form>
+    </dialog>
+
+    <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

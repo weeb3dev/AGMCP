@@ -1,0 +1,23 @@
+{
+  "name": "agmcp",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "USDA Plant Hardiness Zones as WebMCP tools for humans and agents",
+  "license": "MIT",
+  "scripts": {
+    "data": "node scripts/build-data.mjs",
+    "dev": "vite",
+    "build": "npm run data && tsc --noEmit && vite build",
+    "preview": "wrangler dev",
+    "deploy": "npm run build && wrangler deploy",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260903.1",
+    "typescript": "^5.9.2",
+    "vite": "^8.2.2",
+    "webmcp-types": "^0.1.6",
+    "wrangler": "^4.128.0"
+  }
+}
